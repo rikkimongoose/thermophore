@@ -1,0 +1,9 @@
+<h1>Thermophile 1.0</h1>
+<div>
+{% for contest in contests %}
+    <div><a href="{% url 'litcontest:contest' contest.id %}">{{ contest.title }}</a></div>
+    <div>{{ contest.description }}</div>
+    <div><span>{{ contest.theme_by }}</span> предложил тему: {{ contest.theme }}</div>
+    <div><a href="{{ contest.discussion_url }}">Обсуждение</a></div>
+{% endfor %}
+</div>

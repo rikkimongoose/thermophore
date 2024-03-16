@@ -1,0 +1,7 @@
+<h1>{{ contest.title }}</h1>
+<div>Обсуждение конкурса производится по ссылке: <a href="{{ contest.discussion_url }}">{{ contest.discussion_url }}</a></div>
+<div>
+{% for story in contest.story_set.all %}
+    <div><a href="{% url 'litcontest:story' story.id %}">{{ story.title }}</a></div>
+{% endfor %}
+</div>
