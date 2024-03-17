@@ -1,10 +1,12 @@
 <!-- templates/base.html -->
+{% load static %}
 <!DOCTYPE html>
 <html>
 
 <head>
   <meta charset="utf-8">
   <title>{% block title %}Django Auth Tutorial{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'thermophore/style.css' %}">
 </head>
 
 <body>
