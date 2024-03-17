@@ -1,9 +1,10 @@
-from django.urls import path
+from django.urls import path, include
 
 from . import views
 
 app_name = "litcontest"
 urlpatterns = [
+    path("", include("django.contrib.auth.urls")),
     # ex: / 
     path("", views.index, name="index"),
     # ex: /5/
