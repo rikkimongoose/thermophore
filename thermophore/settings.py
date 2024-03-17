@@ -81,6 +81,10 @@ TEMPLATES = [
     },
 ]
 
+LOGIN_REDIRECT_URL = "index"
+LOGOUT_REDIRECT_URL = "index"
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
 WSGI_APPLICATION = 'thermophore.wsgi.application'
 
 
