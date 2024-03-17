@@ -1,7 +1,8 @@
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 
 def validate_texts_num_to_vote(value):
     if value < 1 or value > 6:
@@ -21,7 +22,7 @@ class Contest(models.Model):
     theme_by = models.CharField(max_length=200)
     max_in_group = models.PositiveSmallIntegerField(default=50)
     max_in_final = models.PositiveSmallIntegerField(default=50)
-    max_votes = models.PositiveSmallIntegerField(default=6, validators=[validate_texts_num_to_vote])
+    max_votes = models.PositiveSmallIntegerField(default=6, validators=[MinValueValidator(1), MaxValueValidator(6)])
     min_text_size = models.PositiveIntegerField()
     max_text_size = models.PositiveIntegerField()
     starts = models.DateField(blank=True, null=True)
