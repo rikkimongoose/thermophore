@@ -25,9 +25,6 @@ class RssSiteNewsFeed(Feed):
     def item_link(self, item):
         return make_url(RSS_LINK, "/contest", f"/{item.id}")
 
-    def item_pubdate(self, item):
-        return item.starts.strftime(DATE_FORMAT)
-
 class AtomSiteNewsFeed(RssSiteNewsFeed):
     feed_type = Atom1Feed
     subtitle = RssSiteNewsFeed.description

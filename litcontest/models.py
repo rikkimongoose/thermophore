@@ -10,8 +10,8 @@ class Contest(models.Model):
     title = models.CharField(max_length=200, verbose_name="Название")
     description = models.TextField(verbose_name="Описание")
     discussion_url = models.CharField(max_length=256, verbose_name="Ссылка на страницу с обсуждением")
-    theme = models.CharField(max_length=200, verbose_name="Дата объявления темы и начала приема работ (в 15:00)")
-    theme_by = models.CharField(max_length=200, verbose_name="Автор")
+    theme = models.CharField(max_length=200, verbose_name="Тема")
+    theme_by = models.CharField(max_length=200, verbose_name="Тему предложил")
     max_in_group = models.PositiveSmallIntegerField(default=50, verbose_name="Максимальное количество произведений в группе")
     max_in_final = models.PositiveSmallIntegerField(default=50, verbose_name="Максимальное количество произведений в финале")
     max_votes = models.PositiveSmallIntegerField(default=6, validators=[MinValueValidator(1), MaxValueValidator(6)], verbose_name="Количество произведений, за которые голосует участник")
@@ -22,11 +22,11 @@ class Contest(models.Model):
     voting_starts = models.DateField(blank=True, null=True, verbose_name="Дата начала первого тура")
     voting_starts_final = models.DateField(blank=True, null=True, verbose_name="Дата окончания первого тура")
     finishes = models.DateField(blank=True, null=True, verbose_name="Дата окончания конкурса")
-    created = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    pub_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     def __str__(self):
         return f"{self.title}"
     class Meta:
-        ordering = ["created"]
+        ordering = ["pub_date"]
         verbose_name = 'Конкурс'
         verbose_name_plural = 'Конкурсы'
 
@@ -39,11 +39,11 @@ class Story(models.Model):
     text = models.TextField(verbose_name="Текст")
     hidden = models.BooleanField(verbose_name="Скрыт")
     group = models.PositiveSmallIntegerField(blank=True, null=True, verbose_name="Группа")
-    created = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    pub_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     def __str__(self):
         return f"{self.title}"
     class Meta:
-        ordering = ["created"]
+        ordering = ["pub_date"]
         verbose_name = 'Рассказ'
         verbose_name_plural = 'Рассказы'
 

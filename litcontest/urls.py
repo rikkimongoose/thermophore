@@ -18,6 +18,7 @@ urlpatterns = [
     path("about/", AboutView.as_view(), name="about"),
     path("signup/", SignUpView.as_view(), name="signup"),
     path('login/', auth_views.LoginView.as_view(), name='login'),
-    path("rss/", RssSiteNewsFeed, name="rss"),
-    path("atom/", AtomSiteNewsFeed, name="atom"),
+    path("rss/", RssSiteNewsFeed()),
+    path("feed/", AtomSiteNewsFeed()),
+    path("atom/", AtomSiteNewsFeed()),
 ]
