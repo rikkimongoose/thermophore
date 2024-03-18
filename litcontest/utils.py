@@ -3,13 +3,15 @@ import io
 from .models import Contest
 from zipfile import ZipFile
 
+from urllib.parse import urlencode
+
 START_TIME = '15:00'
 
 def date_to_datetime(date):
     time = datetime.datetime.strptime(START_TIME,'%H:%M').time()
     return datetime.datetime.combine(date, time)
 
-def isBlank(text):
+def is_blank(text):
     return not (text and text.strip())
 
 def update_groups(contest_id):
@@ -28,9 +30,16 @@ def update_groups(contest_id):
             User.objects.filter(id=key).update(group=group)
 
 def pack_to_zip(files_dict):
-	zip_buffer = io.BytesIO()
-	with ZipFile(zip_buffer, "a", ipfile.ZIP_DEFLATED, False) as zip_file:
-		for file_name, text in files_dict:
-			zip_file.writestr(file_name, text.getvalue())
+    zip_buffer = io.BytesIO()
+    with ZipFile(zip_buffer, "a", ipfile.ZIP_DEFLATED, False) as zip_file:
+        for file_name, text in files_dict:
+            zip_file.writestr(file_name, text.getvalue())
     zip_buffer.seek(0)
-	return zip_buffer
+    return zip_buffer
+
+def make_url(base_url, *uris):
+    url = base_url.rstrip('/')
+    for uri in uris:
+        _uri = uri.strip('/')
+        url = '{}/{}'.format(url, _uri) if _uri else url
+    return url

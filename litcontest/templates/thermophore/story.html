@@ -1,6 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
 <h1>{{ story.title }}</h1>
 <dev>
 {% for line in story.text.splitlines %}
     <p>{{ line }}</p>
 {% endfor %}
 </dev>
+{% endblock %}

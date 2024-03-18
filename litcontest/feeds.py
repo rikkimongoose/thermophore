@@ -1,7 +1,7 @@
 from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Atom1Feed
 from .models import Contest
-from .utils import isBlank
+from .utils import is_blank, make_url
 
 RSS_LINK = 'http://thermophore.ru/'
 DATE_FORMAT = '%Y-%m-%d'
@@ -18,15 +18,12 @@ class RssSiteNewsFeed(Feed):
 
     def item_description(self, item):
         starts_date = item.starts.strftime(DATE_FORMAT)
-        finishes_date = item.finishess.strftime(DATE_FORMAT)
-        theme = ' Тема от: %s - %s' % (item.theme_by, item.theme) if isBlank(item.theme) else ''
-        return '%s.%s. Объявление темы: %s. Окончание приёма работ %s' % (item.title, theme, starts_date, finishes_date)
+        finishes_date = item.finishes.strftime(DATE_FORMAT)
+        theme = f"Тема от: {item.theme_by} — {item.theme}" if is_blank(item.theme) else ''
+        return f"{item.title}.{theme}. Объявление темы: {starts_date}. Окончание приёма работ {finishes_date}"
 
     def item_link(self, item):
-        return item.description
-
-    def item_guid(self, item):
-        return "%scontest/%s" % (RSS_LINK, item.id)
+        return make_url(RSS_LINK, "/contest", f"/{item.id}")
 
     def item_pubdate(self, item):
         return item.starts.strftime(DATE_FORMAT)

@@ -7,9 +7,10 @@ from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic.edit import FormView, CreateView, UpdateView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from .models import Contest, Story, Vote
-from .forms import ContestForm, ContestCoordinatorForm, StoryForm
+from .forms import ContestForm, ContestCoordinatorForm, StoryForm, UserRegisterForm
 from .utils import pack_to_zip
 
 def index(request):
@@ -22,30 +23,31 @@ def contest(request, contest_id):
 
 def story(request, story_id):
     story = get_object_or_404(Story, pk=story_id)
-    return render(request, "thermophore/text.html", {"story": story})
+    return render(request, "thermophore/story.html", {"story": story})
 
-class SignUpView(CreateView):
-    form_class = UserCreationForm
-    success_url = reverse_lazy("login")
-    template_name = "registration/signup.html"
+class SignUpView(SuccessMessageMixin, CreateView):
+    success_url = reverse_lazy('litcontest:login')
+    form_class = UserRegisterForm
+    success_message = "Your profile was created successfully"
+    template_name = "registration/register.html"
 
 @login_required
 class StoryFormView(FormView):
     template_name = "thermophore/story_form.html"
     form_class = StoryForm
-    success_url = "/"
+    success_url = reverse_lazy("litcontest:index")
 
 @login_required
 class ContestFormView(FormView):
     template_name = "thermophore/contest_form.html"
     form_class = ContestForm
-    success_url = "/"
+    success_url = reverse_lazy("litcontest:index")
 
 @login_required
 class ContestCoordinatorFormView(FormView):
     template_name = "thermophore/contest_form.html"
     form_class = ContestCoordinatorForm
-    success_url = "/"
+    success_url = reverse_lazy("litcontest:index")
 
 class ContestCreateView(CreateView):
     model = Contest
