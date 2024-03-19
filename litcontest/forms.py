@@ -1,4 +1,5 @@
 from django import forms
+from bootstrap_datepicker_plus.widgets import DatePickerInput
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Contest, Story
@@ -6,7 +7,14 @@ from .models import Contest, Story
 class ContestForm(forms.ModelForm):
     class Meta:
        model = Contest
-       fields = ["title", "description", "discussion_url", "max_in_group", "max_in_final", "max_votes", "min_text_size", "max_text_size", "starts", "submission_finishes", "voting_starts", "voting_starts_final"]
+       fields = ["title", "description", "discussion_url", "max_in_group", "max_in_final", "max_votes", "min_text_size", "max_text_size", "starts", "submission_finishes", "voting_starts", "voting_starts_final", "finishes"]
+       widgets = {
+             "starts": DatePickerInput(),
+             "submission_finishes": DatePickerInput(),
+             "voting_starts": DatePickerInput(),
+             "voting_starts_final": DatePickerInput(),
+             "finishes": DatePickerInput()
+        }
 
 class ContestCoordinatorForm(forms.ModelForm):
     class Meta:
