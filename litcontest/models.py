@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.urls import reverse
 
 class Contest(models.Model):
     REQUIRED_FIELDS = ['title', 'coordinator']
@@ -23,6 +24,8 @@ class Contest(models.Model):
     voting_starts_final = models.DateField(blank=True, null=True, verbose_name="Дата окончания первого тура")
     finishes = models.DateField(blank=True, null=True, verbose_name="Дата окончания конкурса")
     pub_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    def get_absolute_url(self):
+        return reverse('litcontest:contest', kwargs={'pk': self.pk})
     def __str__(self):
         return f"{self.title}"
     class Meta:
@@ -40,6 +43,8 @@ class Story(models.Model):
     hidden = models.BooleanField(verbose_name="Скрыт")
     group = models.PositiveSmallIntegerField(blank=True, null=True, verbose_name="Группа")
     pub_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    def get_absolute_url(self):
+        return reverse('litcontest:story', kwargs={'pk': self.pk})
     def __str__(self):
         return f"{self.title}"
     class Meta:

@@ -7,23 +7,13 @@ from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic.edit import FormView, CreateView, UpdateView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 from .models import Contest, Story, Vote
 from .forms import ContestForm, ContestCoordinatorForm, StoryForm, UserRegisterForm
 from .utils import pack_to_zip
-
-def index(request):
-    contests = get_list_or_404(Contest)
-    return render(request, "thermophore/index.html", {"contests": contests})
-
-def contest(request, contest_id):
-    contest = get_object_or_404(Contest, pk=contest_id)
-    return render(request, "thermophore/contest.html", {"contest": contest})
-
-def story(request, story_id):
-    story = get_object_or_404(Story, pk=story_id)
-    return render(request, "thermophore/story.html", {"story": story})
 
 class SignUpView(SuccessMessageMixin, CreateView):
     success_url = reverse_lazy('litcontest:login')
@@ -31,56 +21,53 @@ class SignUpView(SuccessMessageMixin, CreateView):
     success_message = "Your profile was created successfully"
     template_name = "registration/register.html"
 
-@login_required
-class StoryFormView(FormView):
-    template_name = "thermophore/story_form.html"
-    form_class = StoryForm
-    success_url = reverse_lazy("litcontest:index")
-
-@login_required
-class ContestFormView(FormView):
-    template_name = "thermophore/contest_form.html"
+class ContestFormView(LoginRequiredMixin, FormView):
+    template_name = "litcontest/contest_form.html"
     form_class = ContestForm
     success_url = reverse_lazy("litcontest:index")
 
-@login_required
-class ContestCoordinatorFormView(FormView):
-    template_name = "thermophore/contest_form.html"
+class ContestUpdateFormView(LoginRequiredMixin, FormView):
+    template_name = "litcontest/contest_form.html"
     form_class = ContestCoordinatorForm
     success_url = reverse_lazy("litcontest:index")
 
-class ContestCreateView(CreateView):
+class ContestCreateView(LoginRequiredMixin, CreateView):
     model = Contest
-    fields = ["title", "text"]
+    form_class = ContestForm
+
+class ContestUpdateView(LoginRequiredMixin, UpdateView):
+    model = Contest
+    form_class = ContestForm
 
 class ContestListView(ListView):
     model = Contest
-    template_name = "thermophore/index.html"
+    template_name = "litcontest/index.html"
 
 class ContestDetailView(DetailView):
     model = Contest
-    template_name = "thermophore/contest.html"
+    template_name = "litcontest/contest.html"
 
-class ContestUpdateView(UpdateView):
+class StoryFormView(LoginRequiredMixin, FormView):
+    template_name = "litcontest/story_form.html"
+    form_class = StoryForm
+    success_url = reverse_lazy("litcontest:index")
+
+class StoryCreateView(LoginRequiredMixin, CreateView):
     model = Story
     fields = ["title", "text"]
 
-class StoryCreateView(CreateView):
-    model = Story
-    fields = ["title", "text"]
-
-class StoryUpdateView(UpdateView):
+class StoryUpdateView(LoginRequiredMixin, UpdateView):
     model = Story
     fields = ["title", "text"]
 
 class StoryDetailView(DetailView):
     model = Story
-    template_name = "thermophore/story.html"
+    template_name = "litcontest/story.html"
 
 @require_http_methods(["POST"])
 def vote(request, story_id):
     story = get_object_or_404(Story, pk=story_id)
-    return render(request, "thermophore/story.html", {"story": story})
+    return render(request, "litcontest/story.html", {"story": story})
 
 @cache_page(60 * 60 * 24 * 365)
 def generate_zip(contest_id, group = None):
@@ -93,7 +80,7 @@ def generate_zip(contest_id, group = None):
     return FileResponse(pack_to_zip({x.title: x.text for x in texts}), as_attachment=True, filename=f"{contest_title}.zip")
 
 class RulesView(TemplateView):
-    template_name="thermophore/rules.html"
+    template_name="litcontest/rules.html"
 
 class AboutView(TemplateView):
-    template_name="thermophore/about.html"
+    template_name="litcontest/about.html"
