@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% load bootstrap5 %}
+{% load bootstrap_icons %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
@@ -15,8 +16,8 @@
 <div><a href="{{ object.discussion_url }}" target="_blank" rel="noopener noreferrer">Обсуждение конкурса</a></div>
 <div>
 {% for story in object.story_set.all %}
-    <div><a href="{% url 'litcontest:story' story.id %}">{{ story.title }}</a></div>
+    <div><a href="{% url 'litcontest:story' story.id %}">{{ story.title }}</a> <a href="{% url 'litcontest:story-update' story.id %}" class="btn btn-primary">{% bs_icon 'pencil' %} Редактировать</a></div>
 {% endfor %}
-<a href="{% url 'litcontest:story-add' object.id %}" class="btn btn-info btn-lg" role="button">Добавить рассказ</a>
+<a href="{% url 'litcontest:story-add' object.id %}" class="btn btn-primary" role="button">{% bs_icon 'file-earmark-plus' %} Добавить рассказ</a>
 </div>
 {% endblock %}

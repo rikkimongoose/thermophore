@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load bootstrap5 %}
+{% load bootstrap_icons %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 
@@ -25,8 +26,9 @@ Hi {{ user.username }}!
     <div>{{ contest.description }}</div>
     <div><span>{{ contest.theme_by }}</span> предложил тему: {{ contest.theme }}</div>
     <div><a href="{{ contest.discussion_url }}">Обсуждение</a></div>
+    <div> <a href="{% url 'litcontest:contest-update' contest.id %}" class="btn btn-primary">{% bs_icon 'pencil' %} Редактировать</a></div>
 </div>
 {% endfor %}
-<a href="{% url 'litcontest:contest-add' %}" class="btn btn-info btn-lg" role="button">Создать конкурс</a>
+<a href="{% url 'litcontest:contest-add' %}" class="btn btn-primary" role="button">{% bs_icon 'journal-plus' %} Создать конкурс</a>
 </div>
 {% endblock %}
