@@ -9,6 +9,7 @@ from .feeds import RssSiteNewsFeed, AtomSiteNewsFeed
 app_name = "litcontest"
 urlpatterns = [
     path("", include("django.contrib.auth.urls")),
+    path("accounts/", include("django.contrib.auth.urls")),
     # ex: / 
     path("", ContestListView.as_view(), name="index"),
     # ex: /5/

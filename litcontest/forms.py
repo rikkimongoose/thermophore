@@ -1,5 +1,6 @@
 from django import forms
 from bootstrap_datepicker_plus.widgets import DatePickerInput
+from django.forms import URLInput
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Contest, Story
@@ -13,7 +14,8 @@ class ContestForm(forms.ModelForm):
              "submission_finishes": DatePickerInput(),
              "voting_starts": DatePickerInput(),
              "voting_starts_final": DatePickerInput(),
-             "finishes": DatePickerInput()
+             "finishes": DatePickerInput(),
+             "discussion_url": URLInput()
         }
 
 class ContestCoordinatorForm(forms.ModelForm):

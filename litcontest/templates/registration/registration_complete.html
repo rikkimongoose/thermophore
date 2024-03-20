@@ -1,11 +1,13 @@
 {% extends "registration/registration_base.html" %}
 
-{% block title %}{% "Activation email sent" %}{% endblock %}
+{% block title %}E-mail отправлен{% endblock %}
+
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
 
 {% block content %}
 <p>
-  {% blocktrans with email=request.session.registration_email %}
-    Please check your email, {{ email }}, to complete the registration process.
-  {% endblocktrans %}
+    Регистрация завершена. Проверьте ваш {% request.session.registration_email %}, чтобы завершить регистрацию.
 </p>
 {% endblock %}

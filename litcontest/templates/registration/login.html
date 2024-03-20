@@ -1,12 +1,22 @@
 {% extends "registration/registration_base.html" %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Вход{% endblock %}
+
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{% block extrahead %}
+{{ form.media }}
+{% endblock %}
 
 {% block content %}
-<h2>Log In</h2>
+<h2>Вход</h2>
+<div class="form-label-group">
 <form method="post">
   {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Log In</button>
+  {{ form.as_div }}
+  {% bootstrap_button "Войти" button_type="submit" button_class="btn-primary" %}
 </form>
+</div>
 {% endblock %}
