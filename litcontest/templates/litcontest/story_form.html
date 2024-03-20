@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{% block extrahead %}
+{{ form.media }}
+{% endblock %}
+
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_div }}
+    {% bootstrap_button "Сохранить" button_type="submit" button_class="btn-primary" %}
+</form>
+{% endblock %}

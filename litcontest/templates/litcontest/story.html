@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{% block title %}{{ object.title }}{% endblock %}
+
+{% block content %}
+<h1>{{ object.title }}</h1>
+<dev>
+{% for line in object.text.splitlines %}
+    <p>{{ line }}</p>
+{% endfor %}
+</dev>
+{% endblock %}

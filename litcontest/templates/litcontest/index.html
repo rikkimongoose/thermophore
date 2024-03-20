@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{% block title %}Рваная Грелка{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+Hi {{ user.username }}!
+<form action="{% url 'litcontest:logout' %}" method="post">
+  {% csrf_token %}
+  {% bootstrap_button "Выйти" button_type="submit" button_class="btn-primary" %}
+</form>
+{% else %}
+<p>You are not logged in</p>
+<p><a href="{% url 'litcontest:login' %}">Log In</a></p>
+<p><a href="{% url 'litcontest:signup' %}">Register</a></p>
+<p><a href="{% url 'litcontest:password_reset' %}">Password Reset</a></p>
+{% endif %}
+<div>
+{% for contest in object_list %}
+<div>
+    <div><a href="{% url 'litcontest:contest' contest.id %}">{{ contest.title }}</a></div>
+    <div>{{ contest.description }}</div>
+    <div><span>{{ contest.theme_by }}</span> предложил тему: {{ contest.theme }}</div>
+    <div><a href="{{ contest.discussion_url }}">Обсуждение</a></div>
+</div>
+{% endfor %}
+<a href="{% url 'litcontest:contest-add' %}" class="btn btn-info btn-lg" role="button">Создать конкурс</a>
+</div>
+{% endblock %}

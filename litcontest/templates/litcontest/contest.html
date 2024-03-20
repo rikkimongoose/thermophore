@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{% block title %}{{ object.title }}{% endblock %}
+
+{% block content %}
+<h1>{{ object.title }}</h1>
+<div>
+<span>{{ object.theme_by }}</span> предложил тему: <span>{{ object.theme }}</span>    
+</div>
+<div>{{ object.description }}</div>
+<div><a href="{{ object.discussion_url }}" target="_blank" rel="noopener noreferrer">Обсуждение конкурса</a></div>
+<div>
+{% for story in object.story_set.all %}
+    <div><a href="{% url 'litcontest:story' story.id %}">{{ story.title }}</a></div>
+{% endfor %}
+<a href="{% url 'litcontest:story-add' object.id %}" class="btn btn-info btn-lg" role="button">Добавить рассказ</a>
+</div>
+{% endblock %}
