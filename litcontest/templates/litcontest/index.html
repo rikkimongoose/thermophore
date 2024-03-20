@@ -25,8 +25,8 @@ Hi {{ user.username }}!
     <div><a href="{% url 'litcontest:contest' contest.id %}">{{ contest.title }}</a></div>
     <div>{{ contest.description }}</div>
     <div><span>{{ contest.theme_by }}</span> предложил тему: {{ contest.theme }}</div>
-    <div><a href="{{ contest.discussion_url }}">Обсуждение</a></div>
-    <div> <a href="{% url 'litcontest:contest-update' contest.id %}" class="btn btn-primary">{% bs_icon 'pencil' %} Редактировать</a></div>
+    <div><a href="{{ contest.discussion_url }}">{% bs_icon 'chat-left' %}</a></div>
+    <div><a href="{% url 'litcontest:contest-update' contest.id %}" class="btn btn-primary">{% bs_icon 'pencil' %}</a></div>
 </div>
 {% endfor %}
 <a href="{% url 'litcontest:contest-add' %}" class="btn btn-primary" role="button">{% bs_icon 'journal-plus' %} Создать конкурс</a>

@@ -9,8 +9,14 @@
 {% block content %}
 <h1>{{ object.title }}</h1>
 <dev>
+    <em>{{ object.owner }}</em>
+</dev>
+<dev>
 {% for line in object.text.splitlines %}
     <p>{{ line }}</p>
 {% endfor %}
+</dev>
+<dev>
+    <a href="{% url 'litcontest:contest' object.contest.id %}">На страницу конкурса {{ object.contest.title }}</a>
 </dev>
 {% endblock %}

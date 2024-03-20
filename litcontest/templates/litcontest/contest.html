@@ -9,14 +9,21 @@
 
 {% block content %}
 <h1>{{ object.title }}</h1>
-<div>
-<span>{{ object.theme_by }}</span> предложил тему: <span>{{ object.theme }}</span>    
-</div>
+<figure>
+  <blockquote class="blockquote">
+    <p>Тема конкурса: {{ object.theme }}.</p>
+  </blockquote>
+  <figcaption class="blockquote-footer">
+    <cite title="Theme">{{ object.theme_by }}</cite>
+  </figcaption>
+</figure>
 <div>{{ object.description }}</div>
-<div><a href="{{ object.discussion_url }}" target="_blank" rel="noopener noreferrer">Обсуждение конкурса</a></div>
+<div><a href="{{ object.discussion_url }}" target="_blank" rel="noopener noreferrer">{% bs_icon 'chat-left' %}</a></div>
 <div>
+    <ul>
 {% for story in object.story_set.all %}
-    <div><a href="{% url 'litcontest:story' story.id %}">{{ story.title }}</a> <a href="{% url 'litcontest:story-update' story.id %}" class="btn btn-primary">{% bs_icon 'pencil' %} Редактировать</a></div>
+    <li><em>{{ story.owner }}</em> <a href="{% url 'litcontest:story' story.id %}">{{ story.title }}</a> <a href="{% url 'litcontest:story-update' story.id %}" class="btn btn-primary">{% bs_icon 'pencil' %}</a>
+    </li>
 {% endfor %}
 <a href="{% url 'litcontest:story-add' object.id %}" class="btn btn-primary" role="button">{% bs_icon 'file-earmark-plus' %} Добавить рассказ</a>
 </div>
