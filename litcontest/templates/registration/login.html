@@ -15,7 +15,9 @@
 <div class="form-label-group">
 <form method="post">
   {% csrf_token %}
-  {{ form.as_div }}
+  <table>
+  {{ form.as_table }}
+  </table>
   {% bootstrap_button "Войти" button_type="submit" button_class="btn-primary" %}
 </form>
 </div>

@@ -14,7 +14,9 @@
 <h2>Регистрация</h2>
 <form method="post">
   {% csrf_token %}
-  {{ form.as_div }}
+  <table>
+  {{ form.as_table }}
+  </table>
   {% bootstrap_button "Создать" button_type="submit" button_class="btn-primary" %}
 </form>
 {% endblock %}
