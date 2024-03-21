@@ -1,7 +1,7 @@
 import datetime
 import io
 from .models import Contest
-from zipfile import ZipFile
+from zipfile import ZipFile, ZIP_DEFLATED
 
 from urllib.parse import urlencode
 
@@ -31,11 +31,11 @@ def update_groups(contest_id):
 
 def pack_to_zip(files_dict):
     zip_buffer = io.BytesIO()
-    with ZipFile(zip_buffer, "a", ipfile.ZIP_DEFLATED, False) as zip_file:
-        for file_name, text in files_dict:
-            zip_file.writestr(file_name, text.getvalue())
-    zip_buffer.seek(0)
-    return zip_buffer
+    zip_file = ZipFile(zip_buffer, 'w')
+    for file_name in files_dict:
+        zip_file.writestr(file_name, files_dict[file_name])
+    zip_file.close()
+    return zip_buffer.getvalue()
 
 def make_url(base_url, *uris):
     url = base_url.rstrip('/')

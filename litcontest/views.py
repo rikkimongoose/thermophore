@@ -1,4 +1,4 @@
-from django.http import HttpResponse, FileResponse
+from django.http import HttpResponse, FileResponse,Http404
 from django.template import loader
 from django.shortcuts import get_object_or_404, get_list_or_404, render
 from django.views.decorators.http import require_http_methods
@@ -11,6 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
+from django.utils.encoding import escape_uri_path
 from .models import Contest, Story, Vote
 from .forms import ContestForm, ContestCoordinatorForm, StoryForm, UserRegisterForm
 from .utils import pack_to_zip
@@ -69,15 +70,25 @@ def vote(request, story_id):
     story = get_object_or_404(Story, pk=story_id)
     return render(request, "litcontest/story.html", {"story": story})
 
-@cache_page(60 * 60 * 24 * 365)
-def generate_zip(contest_id, group = None):
-    texts = None
+#@cache_page(60 * 60 * 24 * 365)
+def generate_zip(request, *args, **kwargs):
+    contest_id = kwargs.get('contest_id', None)
+    if contest_id is None: raise Http404
+    group = kwargs.get('group', None)
+    texts_data = None
     if group is None:
-        texts = Story.objects.filter(contest__id = contest_id).values('title', 'text')
+        texts_data = Story.objects.filter(contest__id = contest_id).values('title', 'text')
     else:
-        texts = Story.objects.filter(contest__id = contest_id, group = group).values('title', 'text')
-    contest_title = Contest.objects.filter(id = contest_id).only('title')
-    return FileResponse(pack_to_zip({x.title: x.text for x in texts}), as_attachment=True, filename=f"{contest_title}.zip")
+        texts_data = Story.objects.filter(contest__id = contest_id, group = group).values('title', 'text')
+    contest_data = Contest.objects.filter(id = contest_id).only('title')
+    contest_title = escape_uri_path(contest_data[0].title)
+    zip_file = {}
+    for text in texts_data:
+        zip_file[text["title"] + ".txt"] = text["text"]
+    zip_file_attachment = pack_to_zip(zip_file)
+    response = HttpResponse(zip_file_attachment, content_type='application/x-zip-compressed')
+    response['Content-Disposition'] = f"attachment; filename*=UTF-8''{contest_title}.zip"
+    return response
 
 class RulesView(TemplateView):
     template_name="litcontest/rules.html"

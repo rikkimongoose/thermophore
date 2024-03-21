@@ -14,6 +14,7 @@ urlpatterns = [
     path("", ContestListView.as_view(), name="index"),
     # ex: /5/
     path("<int:pk>/", ContestDetailView.as_view(), name="contest"),
+    path("<int:contest_id>/download", views.generate_zip, name="generate_zip"),
     path("add/", ContestCreateView.as_view(), name="contest-add"),
     path("<int:pk>/edit", ContestUpdateView.as_view(), name="contest-update"),
     # ex: /polls/5/results/

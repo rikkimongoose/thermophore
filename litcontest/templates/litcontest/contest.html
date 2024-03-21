@@ -18,7 +18,10 @@
   </figcaption>
 </figure>
 <div>{{ object.description }}</div>
-<div><a href="{{ object.discussion_url }}" target="_blank" rel="noopener noreferrer">{% bs_icon 'chat-left' %}</a></div>
+<div>
+  <a href="{{ object.discussion_url }}" target="_blank" rel="noopener noreferrer">{% bs_icon 'chat-left' %} Внешнее обсуждение</a></div>
+<div>
+  <a href="{% url 'litcontest:generate_zip' object.id %}">{% bs_icon 'download' %} Скачать одним архивом</a></div>
 <div>
     <ul>
 {% for story in object.story_set.all %}
