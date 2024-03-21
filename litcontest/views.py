@@ -1,3 +1,4 @@
+from django.db.models import Count
 from django.http import HttpResponse, FileResponse,Http404
 from django.template import loader
 from django.shortcuts import get_object_or_404, get_list_or_404, render
@@ -43,6 +44,10 @@ class ContestUpdateView(LoginRequiredMixin, UpdateView):
 class ContestListView(ListView):
     model = Contest
     template_name = "litcontest/index.html"
+
+    def get_queryset(self):
+        qs = super(ContestListView, self).get_queryset()
+        return qs.annotate(Count('story'))
 
 class ContestDetailView(DetailView):
     model = Contest
