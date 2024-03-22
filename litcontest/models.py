@@ -12,6 +12,7 @@ class Contest(models.Model):
     description = models.TextField(verbose_name="Описание")
     discussion_url = models.CharField(max_length=256, verbose_name="Ссылка на страницу с обсуждением")
     theme = models.CharField(max_length=200, blank=True, null=True, verbose_name="Тема")
+    theme_ext = models.CharField(max_length=200, blank=True, null=True, verbose_name="Дополнительные условия")
     theme_by = models.CharField(max_length=200, blank=True, null=True, verbose_name="Тему предложил")
     max_in_group = models.PositiveSmallIntegerField(default=50, validators=[MinValueValidator(1)], verbose_name="Максимальное количество произведений в группе")
     max_in_final = models.PositiveSmallIntegerField(default=50, validators=[MinValueValidator(1)], verbose_name="Максимальное количество произведений в финале")
