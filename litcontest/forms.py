@@ -1,6 +1,6 @@
 from django import forms
 from bootstrap_datepicker_plus.widgets import DatePickerInput
-from django.forms import URLInput, HiddenInput
+from django.forms import URLInput
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Contest, Story
@@ -28,12 +28,17 @@ class StoryForm(forms.ModelForm):
     class Meta:
         model = Story
         fields = ["title", "text", "contest"]
-        widgets = {
-             "contest": HiddenInput()
-        }
 
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField()
     class Meta:
         model = User
         fields = ['username', 'email']
+
+class VoteForm(forms.Form):
+    vote1 = forms.ModelChoiceField(queryset=Story.objects.all(), label="1 место")
+    vote2 = forms.ModelChoiceField(queryset=Story.objects.all(), label="2 место")
+    vote3 = forms.ModelChoiceField(queryset=Story.objects.all(), label="3 место")
+    vote4 = forms.ModelChoiceField(queryset=Story.objects.all(), label="4 место")
+    vote5 = forms.ModelChoiceField(queryset=Story.objects.all(), label="5 место")
+    vote6 = forms.ModelChoiceField(queryset=Story.objects.all(), label="6 место")

@@ -10,14 +10,11 @@ app_name = "litcontest"
 urlpatterns = [
     path("", include("django.contrib.auth.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
-    # ex: / 
     path("", ContestListView.as_view(), name="index"),
-    # ex: /5/
     path("<int:pk>/", ContestDetailView.as_view(), name="contest"),
     path("<int:contest_id>/download", views.generate_zip, name="generate_zip"),
     path("add/", ContestCreateView.as_view(), name="contest-add"),
     path("<int:pk>/edit", ContestUpdateView.as_view(), name="contest-update"),
-    # ex: /polls/5/results/
     path("text/<int:pk>", StoryDetailView.as_view(), name="story"),
     path("<int:contest_id>/add", StoryCreateView.as_view(), name="story-add"),
     path("text/<int:pk>/edit", StoryUpdateView.as_view(), name="story-update"),

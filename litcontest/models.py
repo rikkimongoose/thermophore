@@ -37,7 +37,7 @@ class Contest(models.Model):
 class Story(models.Model):
     REQUIRED_FIELDS = ['title', 'contest']
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True, verbose_name="Автор")
-    contest = models.ForeignKey(Contest, on_delete=models.CASCADE, verbose_name="Конкурс")
+    contest = models.ForeignKey(Contest, on_delete=models.CASCADE, null=True, verbose_name="Конкурс")
     author = models.CharField(max_length=200, verbose_name="Имя автора") # добавлено для совместимости с прошлым движком
     title = models.CharField(max_length=200, verbose_name="Название")
     text = models.TextField(verbose_name="Текст")

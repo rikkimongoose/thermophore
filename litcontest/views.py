@@ -14,8 +14,17 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.encoding import escape_uri_path
 from .models import Contest, Story, Vote
-from .forms import ContestForm, ContestCoordinatorForm, StoryForm, UserRegisterForm
+from .forms import ContestForm, ContestCoordinatorForm, StoryForm, UserRegisterForm, VoteForm
 from .utils import pack_to_zip
+
+VOTES = {
+    1:10,
+    2:6,
+    3:3,
+    4:3,
+    5:2,
+    6:1
+}
 
 class SignUpView(SuccessMessageMixin, CreateView):
     success_url = reverse_lazy('litcontest:login')
@@ -36,6 +45,14 @@ class ContestUpdateFormView(LoginRequiredMixin, FormView):
 class ContestCreateView(LoginRequiredMixin, CreateView):
     model = Contest
     form_class = ContestForm
+    def form_valid(self, form):
+        instance = form.save(commit=False)
+        print('contest_id')
+        print(self.kwargs.get('contest_id'))
+        instance.contest_id = self.kwargs.get('contest_id')
+        instance.contest = Contest.objects.get(pk=self.kwargs.get('contest_id'))
+        form.save()
+        return HttpResponseRedirect(self.get_success_url())
 
 class ContestUpdateView(LoginRequiredMixin, UpdateView):
     model = Contest
@@ -44,14 +61,14 @@ class ContestUpdateView(LoginRequiredMixin, UpdateView):
 class ContestListView(ListView):
     model = Contest
     template_name = "litcontest/index.html"
-
     def get_queryset(self):
         qs = super(ContestListView, self).get_queryset()
         return qs.annotate(Count('story'))
 
-class ContestDetailView(DetailView):
+class ContestDetailView(DetailView, FormView):
     model = Contest
     template_name = "litcontest/contest.html"
+    form_class = VoteForm
 
 class StoryFormView(LoginRequiredMixin, FormView):
     template_name = "litcontest/story_form.html"

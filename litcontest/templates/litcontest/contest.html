@@ -28,6 +28,16 @@
     <li><em>{{ story.owner }}</em> <a href="{% url 'litcontest:story' story.id %}">{{ story.title }}</a> <a href="{% url 'litcontest:story-update' story.id %}" class="btn btn-primary">{% bs_icon 'pencil' %}</a>
     </li>
 {% endfor %}
+<h3>Голосование</h3>
+<form method="post" action="">
+    {% csrf_token %}
+    <table>
+    {{ form.as_table }}
+    </table>
+    {% bootstrap_button "Голосовать" button_type="submit" button_class="btn-primary" %}
+</form>
+
+<h3>Добавить рассказ</h3>
 <a href="{% url 'litcontest:story-add' object.id %}" class="btn btn-primary" role="button">{% bs_icon 'file-earmark-plus' %} Добавить рассказ</a>
 </div>
 {% endblock %}
