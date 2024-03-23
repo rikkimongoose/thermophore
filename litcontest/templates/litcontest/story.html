@@ -17,6 +17,6 @@
 {% endfor %}
 </dev>
 <dev>
-    <a href="{% url 'litcontest:contest' object.contest.id %}">На страницу конкурса {{ object.contest.title }}</a>
+    <a href="{% url 'litcontest:contest-detail' object.contest.id %}">На страницу конкурса {{ object.contest.title }}</a>
 </dev>
 {% endblock %}
