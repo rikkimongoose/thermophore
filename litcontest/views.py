@@ -1,7 +1,7 @@
 from django.db.models import Count
 from django.http import HttpResponse, FileResponse,Http404
 from django.template import loader
-from django.shortcuts import get_object_or_404, get_list_or_404, render
+from django.shortcuts import get_object_or_404, get_list_or_404, render, redirect
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.cache import cache_page
 from django.views.generic import TemplateView, ListView, DetailView
@@ -45,12 +45,9 @@ class ContestUpdateFormView(LoginRequiredMixin, FormView):
 class ContestCreateView(LoginRequiredMixin, CreateView):
     model = Contest
     form_class = ContestForm
+    success_url = reverse_lazy("litcontest:index")
     def form_valid(self, form):
-        instance = form.save(commit=False)
-        print('contest_id')
-        print(self.kwargs.get('contest_id'))
-        instance.contest_id = self.kwargs.get('contest_id')
-        instance.contest = Contest.objects.get(pk=self.kwargs.get('contest_id'))
+        form.instance.owner = self.request.user
         form.save()
         return HttpResponseRedirect(self.get_success_url())
 
@@ -78,6 +75,12 @@ class StoryFormView(LoginRequiredMixin, FormView):
 class StoryCreateView(LoginRequiredMixin, CreateView):
     model = Story
     fields = ["title", "text"]
+    def form_valid(self, form):
+        contest_id = self.kwargs.get('contest_id')
+        form.instance.owner = self.request.user
+        form.instance.contest = get_object_or_404(Contest, pk=contest_id)
+        form.save()
+        return redirect("litcontest:contest", pk=contest_id)
 
 class StoryUpdateView(LoginRequiredMixin, UpdateView):
     model = Story
@@ -88,9 +91,9 @@ class StoryDetailView(DetailView):
     template_name = "litcontest/story.html"
 
 @require_http_methods(["POST"])
-def vote(request, story_id):
+def vote(request, contest_id):
     story = get_object_or_404(Story, pk=story_id)
-    return render(request, "litcontest/story.html", {"story": story})
+    return render(request, "litcontest/story.html", {"contest_id": contest_id})
 
 #@cache_page(60 * 60 * 24 * 365)
 def generate_zip(request, *args, **kwargs):
