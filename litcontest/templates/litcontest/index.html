@@ -22,7 +22,7 @@ Hi {{ user.username }}!
 <div>
 {% for contest in object_list %}
 <div>
-    <div><a href="{% url 'litcontest:contest' contest.id %}">{{ contest.title }}</a></div>
+    <div><a href="{% url 'litcontest:contest-detail' contest.id %}">{{ contest.title }}</a></div>
     <div>{{ contest.description }}</div>
     <div><span>{{ contest.theme_by }}</span> предложил тему: {{ contest.theme }}</div>
     <div><a href="{{ contest.discussion_url }}">{% bs_icon 'chat-left' %}</a></div>

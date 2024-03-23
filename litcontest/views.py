@@ -68,7 +68,7 @@ class StoryCreateView(LoginRequiredMixin, CreateView):
         form.instance.owner = self.request.user
         form.instance.contest = get_object_or_404(Contest, pk=contest_id)
         form.save()
-        return redirect("litcontest:contest", pk=contest_id)
+        return redirect("litcontest:contest-detail", pk=contest_id)
 
 class StoryUpdateView(LoginRequiredMixin, UpdateView):
     model = Story

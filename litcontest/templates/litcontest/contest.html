@@ -25,7 +25,7 @@
 <div>
     <ul>
 {% for story in object.story_set.all %}
-    <li><em>{{ story.owner }}</em> <a href="{% url 'litcontest:story' story.id %}">{{ story.title }}</a> <a href="{% url 'litcontest:story-update' story.id %}" class="btn btn-primary">{% bs_icon 'pencil' %}</a>
+    <li><em>{{ story.owner }}</em> <a href="{% url 'litcontest:story-detail' story.id %}">{{ story.title }}</a> <a href="{% url 'litcontest:story-update' story.id %}" class="btn btn-primary">{% bs_icon 'pencil' %}</a>
     </li>
 {% endfor %}
 <h3>Голосование</h3>
