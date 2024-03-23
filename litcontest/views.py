@@ -32,20 +32,9 @@ class SignUpView(SuccessMessageMixin, CreateView):
     success_message = "Your profile was created successfully"
     template_name = "registration/register.html"
 
-class ContestFormView(LoginRequiredMixin, FormView):
-    template_name = "litcontest/contest_form.html"
-    form_class = ContestForm
-    success_url = reverse_lazy("litcontest:index")
-
-class ContestUpdateFormView(LoginRequiredMixin, FormView):
-    template_name = "litcontest/contest_form.html"
-    form_class = ContestCoordinatorForm
-    success_url = reverse_lazy("litcontest:index")
-
 class ContestCreateView(LoginRequiredMixin, CreateView):
     model = Contest
     form_class = ContestForm
-    success_url = reverse_lazy("litcontest:index")
     def form_valid(self, form):
         form.instance.owner = self.request.user
         form.save()
@@ -54,6 +43,10 @@ class ContestCreateView(LoginRequiredMixin, CreateView):
 class ContestUpdateView(LoginRequiredMixin, UpdateView):
     model = Contest
     form_class = ContestForm
+
+class ContestCoordinatorUpdateView(LoginRequiredMixin, UpdateView):
+    model = Contest
+    form_class = ContestCoordinatorForm
 
 class ContestListView(ListView):
     model = Contest
@@ -66,11 +59,6 @@ class ContestDetailView(DetailView, FormView):
     model = Contest
     template_name = "litcontest/contest.html"
     form_class = VoteForm
-
-class StoryFormView(LoginRequiredMixin, FormView):
-    template_name = "litcontest/story_form.html"
-    form_class = StoryForm
-    success_url = reverse_lazy("litcontest:index")
 
 class StoryCreateView(LoginRequiredMixin, CreateView):
     model = Story

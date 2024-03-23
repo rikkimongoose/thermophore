@@ -26,7 +26,7 @@ class Contest(models.Model):
     finishes = models.DateField(blank=True, null=True, verbose_name="Дата окончания конкурса")
     pub_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     def get_absolute_url(self):
-        return reverse('litcontest:contest', kwargs={'pk': self.pk})
+        return reverse("litcontest:contest-detail", kwargs={"pk": self.pk})
     def __str__(self):
         return f"{self.title}"
     class Meta:
@@ -45,7 +45,7 @@ class Story(models.Model):
     group = models.PositiveSmallIntegerField(blank=True, null=True, verbose_name="Группа")
     pub_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     def get_absolute_url(self):
-        return reverse('litcontest:story', kwargs={'pk': self.pk})
+        return reverse('litcontest:story-detail', kwargs={'pk': self.pk})
     def __str__(self):
         return f"{self.title}"
     class Meta:
