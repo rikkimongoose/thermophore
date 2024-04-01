@@ -1,6 +1,6 @@
 import datetime
 import io
-from .models import Contest
+from .models import Contest, Story
 from zipfile import ZipFile, ZIP_DEFLATED
 
 from urllib.parse import urlencode
@@ -15,19 +15,13 @@ def is_blank(text):
     return not (text and text.strip())
 
 def update_groups(contest_id):
-    if Story.objects.filter(contest__id = contest_id, group__isnull = False).exists():
+    if Story.objects.filter(Q(contest__id = contest_id) & Q(group__isnull = False)).exists():
         return
     max_in_group = Contest.objects.filter(id = contest_id).only('max_in_group')
-    stories = Story.objects.filter(contest__id = contest_id).only('group')
-    stories_len = len(stories)
-    group_index = max_in_group // stories_len
-    stories_id = map(lambda s: s.id, stories) 
-    stories_dict = {}
-    for i in range(stories_len):
-        stories_dict[stories_id[i]] = i % group_index
-    with transaction.atomic():
-        for key, group in stories_dict:
-            User.objects.filter(id=key).update(group=group)
+    stories = Story.objects.filter(contest__id = contest_id)
+    for i in range(len(stories)):
+        stories[i].group = i // max_in_group
+    Story.objects.bulk_update(stories, ["group"])
 
 def pack_to_zip(files_dict):
     zip_buffer = io.BytesIO()

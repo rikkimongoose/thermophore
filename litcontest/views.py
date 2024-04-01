@@ -1,5 +1,5 @@
-from django.db.models import Count
-from django.http import HttpResponse, FileResponse,Http404
+from django.db.models import Count, Q
+from django.http import HttpResponse, FileResponse, HttpResponseForbidden, Http404
 from django.template import loader
 from django.shortcuts import get_object_or_404, get_list_or_404, render, redirect
 from django.views.decorators.http import require_http_methods
@@ -59,6 +59,24 @@ class ContestDetailView(DetailView, FormView):
     model = Contest
     template_name = "litcontest/contest.html"
     form_class = VoteForm
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        contest_id = self.kwargs.get('contest_id')
+        if form.is_valid():
+            contest = get_object_or_404(Contest, pk=contest_id)
+            stage = contest.get_voting_stage()
+            if stage is None: return HttpResponseForbidden
+            Vote.objects.filter(
+                Q(owener=self.request.user) &
+                Q(stage=stage) &
+                Q(story__contest__id=contest_id)).delete()
+            votes = []
+            for k, v in VOTES.items():
+                vote = Vote.objects.create(owner = self.request.user, story = get_object_or_404(Story, pk=form.instance[f"vote{k}"]), stage = stage, stars = v)
+                votes.append(vote)
+            Vote.objects.bulk_create(votes)
+            return HttpResponseRedirect(self.get_success_url())
+        return super().post(request, *args, **kwargs)
 
 class StoryCreateView(LoginRequiredMixin, CreateView):
     model = Story
@@ -78,12 +96,7 @@ class StoryDetailView(DetailView):
     model = Story
     template_name = "litcontest/story.html"
 
-@require_http_methods(["POST"])
-def vote(request, contest_id):
-    story = get_object_or_404(Story, pk=story_id)
-    return render(request, "litcontest/story.html", {"contest_id": contest_id})
-
-#@cache_page(60 * 60 * 24 * 365)
+@cache_page(60 * 60 * 24 * 365)
 def generate_zip(request, *args, **kwargs):
     contest_id = kwargs.get('contest_id', None)
     if contest_id is None: raise Http404

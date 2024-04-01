@@ -1,8 +1,18 @@
+from enum import Enum
+from datetime import datetime
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.urls import reverse
+
+class ContestStage(Enum):
+    BEFORE_POST_STORY = 0
+    POST_STORY = 1
+    AFTER_POST_STORY = 2
+    VOTING_FIRST = 3
+    VOTING_FINAL = 4
+    FINISHED = 5
 
 class Contest(models.Model):
     REQUIRED_FIELDS = ['title', 'coordinator']
@@ -25,6 +35,21 @@ class Contest(models.Model):
     voting_starts_final = models.DateField(blank=True, null=True, verbose_name="Дата окончания первого тура")
     finishes = models.DateField(blank=True, null=True, verbose_name="Дата окончания конкурса")
     pub_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    def get_stage(self):
+        now = datetime.now()
+        if self.starts > now: ContestStage.BEFORE_POST_STORY
+        if self.submission_finishes > now: ContestStage.POST_STORY
+        if self.voting_starts > now: ContestStage.AFTER_POST_STORY
+        if self.voting_starts_final > now: ContestStage.VOTING_FIRST
+        if self.finishes > now: ContestStage.VOTING_FINAL
+        return ContestStage.FINISHED
+    def get_voting_stage(self):
+        stage = self.get_stage()
+        if stage == ContestStage.VOTING_FIRST: return Vote.VoteStage.FIRST
+        if stage == ContestStage.VOTING_FINAL: return Vote.VoteStage.FINAL
+        return None
+    def needs_final(self):
+        return self.max_in_group >= len(self.stories)
     def get_absolute_url(self):
         return reverse("litcontest:contest-detail", kwargs={"pk": self.pk})
     def __str__(self):
