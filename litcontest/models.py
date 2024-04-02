@@ -52,6 +52,8 @@ class Contest(models.Model):
         return self.max_in_group >= len(self.stories)
     def get_absolute_url(self):
         return reverse("litcontest:contest-detail", kwargs={"pk": self.pk})
+    def is_active(self):
+        return self.get_stage() not in (ContestStage.FINISHED)
     def __str__(self):
         return f"{self.title}"
     class Meta:
