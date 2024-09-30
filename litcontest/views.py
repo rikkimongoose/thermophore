@@ -17,7 +17,9 @@ from django.utils.decorators import method_decorator
 from django.utils.encoding import escape_uri_path
 from .models import Contest, Story, Vote, ContestStage
 from .forms import ContestForm, ContestCoordinatorForm, StoryForm, UserRegisterForm, VoteForm
-from .utils import pack_to_zip, text_len
+from .utils import pack_to_zip, update_groups, load_voting_groups
+
+from collections import defaultdict
 
 VOTES = {
     1:10,
@@ -61,6 +63,22 @@ class ContestDetailView(DetailView, FormView):
     model = Contest
     template_name = "litcontest/contest.html"
     form_class = VoteForm
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        # Group if it's possible
+        stage = context.object.get_voting_stage()
+        if stage in (ContestStage.VOTING_FIRST, ContestStage.VOTING_FINAL):
+            context["is_voting"] = True
+            if stage == ContestStage.VOTING_FIRST:
+                stories = context.object.story_set.all
+                if not stories: return context
+                # надо где-то не здесь
+                # if not stories[0].group: update_groups(self.kwargs.get('contest_id'))
+                stories_grouped = defaultdict(set)
+                for story in stories: stories_grouped[story.group].append(story)
+                context["grouped"] = stories_grouped
+        return context
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
         contest_id = self.kwargs.get('contest_id')

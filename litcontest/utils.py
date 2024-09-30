@@ -19,7 +19,7 @@ def update_groups(contest_id):
     if Story.objects.filter(Q(contest__id = contest_id) & Q(group__isnull = False)).exists(): return
     max_in_group = Contest.objects.filter(id = contest_id).only('max_in_group')
     stories = Story.objects.filter(contest__id = contest_id)
-    for i in range(len(stories)): stories[i].group = i // max_in_group
+    for i in range(len(stories)): stories[i].group = (i // max_in_group) + 1
     Story.objects.bulk_update(stories, ["group"])
 
 def pack_to_zip(files_dict):
@@ -39,7 +39,7 @@ def make_url(base_url, *uris):
 def text_len(e):
   return len(e['text'])
 
-def voting_groups(user, contest_id):
+def load_voting_groups(user, contest_id):
     my_stories = Story.objects.filter(Q(contest__id = contest_id) & Q(author = self.request.user)).values('id', 'text', 'group')
     if not my_stories: return None
     my_stories_sorted = sorted(data, key=text_len)
