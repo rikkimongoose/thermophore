@@ -1,5 +1,6 @@
 import datetime
 import io
+from django.db.models import Count, Q
 from .models import Contest, Story
 from zipfile import ZipFile, ZIP_DEFLATED
 
@@ -15,19 +16,16 @@ def is_blank(text):
     return not (text and text.strip())
 
 def update_groups(contest_id):
-    if Story.objects.filter(Q(contest__id = contest_id) & Q(group__isnull = False)).exists():
-        return
+    if Story.objects.filter(Q(contest__id = contest_id) & Q(group__isnull = False)).exists(): return
     max_in_group = Contest.objects.filter(id = contest_id).only('max_in_group')
     stories = Story.objects.filter(contest__id = contest_id)
-    for i in range(len(stories)):
-        stories[i].group = i // max_in_group
+    for i in range(len(stories)): stories[i].group = i // max_in_group
     Story.objects.bulk_update(stories, ["group"])
 
 def pack_to_zip(files_dict):
     zip_buffer = io.BytesIO()
     zip_file = ZipFile(zip_buffer, 'w')
-    for file_name in files_dict:
-        zip_file.writestr(file_name, files_dict[file_name])
+    for file_name in files_dict: zip_file.writestr(file_name, files_dict[file_name])
     zip_file.close()
     return zip_buffer.getvalue()
 
@@ -37,3 +35,12 @@ def make_url(base_url, *uris):
         _uri = uri.strip('/')
         url = '{}/{}'.format(url, _uri) if _uri else url
     return url
+
+def text_len(e):
+  return len(e['text'])
+
+def voting_groups(user, contest_id):
+    my_stories = Story.objects.filter(Q(contest__id = contest_id) & Q(author = self.request.user)).values('id', 'text', 'group')
+    if not my_stories: return None
+    my_stories_sorted = sorted(data, key=text_len)
+    return [my_stories_sorted[0]['group']]

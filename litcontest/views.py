@@ -10,12 +10,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.encoding import escape_uri_path
-from .models import Contest, Story, Vote
+from .models import Contest, Story, Vote, ContestStage
 from .forms import ContestForm, ContestCoordinatorForm, StoryForm, UserRegisterForm, VoteForm
-from .utils import pack_to_zip
+from .utils import pack_to_zip, text_len
 
 VOTES = {
     1:10,
@@ -65,9 +67,48 @@ class ContestDetailView(DetailView, FormView):
         if form.is_valid():
             contest = get_object_or_404(Contest, pk=contest_id)
             stage = contest.get_voting_stage()
-            if stage is None: return HttpResponseForbidden
+            if stage not in (ContestStage.VOTING_FIRST, ContestStage.VOTING_FINAL): return HttpResponseForbidden
+
+            allowed_groups = None
+            if stage == ContestStage.VOTING_FIRST:
+                allowed_groups = load_voting_groups(self.request.user, contest_id)
+                if not allowed_groups: raise ValidationError("У вас нет историй. Вы не можете голосовать.")
+
+            votes_to_check = []
+            checking_errors = []
+            for k, v in VOTES.items():
+                votes_to_check.append(form.instance[f"vote{k}"])
+            votes_len = len(votes.items())
+            for i in range(0, votes_len):
+                for j in range(i + 1, votes_len):
+                    if(votes_to_check[i] == votes_to_check[j]):
+                        checking_errors.append(
+                            ValidationError(
+                                _("Вы проголосовали за одинаковые рассказы: %(i) и %(j)"),
+                                    params={"i": i, "j": j},
+                                )
+                            )
+            for vote_story_id in votes_to_check:
+                story = get_object_or_404(Story, pk=vote_story_id)
+                if allowed_groups is not None and story.group not in allowed_groups:
+                    checking_errors.append(
+                        ValidationError(
+                            _("Вы проголосовали за историю '%(title)' из группы %(group). Вы не можете голосовать за истории из этой группы"),
+                                params={"title": story.title, "group": story.group },
+                            )
+                        )
+                if story.owner == self.request.user:
+                    checking_errors.append(
+                        ValidationError(
+                            _("Вы не можете голосовать за свою собственную историю '%(title)'."),
+                                params={"title": story.title },
+                            )
+                        )
+
+            if checking_errors: raise ValidationError(checking_errors)
+
             Vote.objects.filter(
-                Q(owener=self.request.user) &
+                Q(owner=self.request.user) &
                 Q(stage=stage) &
                 Q(story__contest__id=contest_id)).delete()
             votes = []
