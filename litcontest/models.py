@@ -71,6 +71,7 @@ class Story(models.Model):
     hidden = models.BooleanField(verbose_name="Скрыт", default=False)
     group = models.PositiveSmallIntegerField(blank=True, null=True, verbose_name="Группа")
     pub_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    is_final = BooleanField(verbose_name="Вышел в финал")
     def get_absolute_url(self):
         return reverse('litcontest:story-detail', kwargs={'pk': self.pk})
     def __str__(self):
@@ -84,6 +85,10 @@ class Vote(models.Model):
     class VoteStage(models.IntegerChoices):
         FIRST = 1, "Начальное"
         FINAL = 2, "Финальное"
+        def get_vote_stage(self, contest_stage):
+            if contest_stage == ContestStage.VOTING_FIRST: return VoteStage.FIRST
+            if contest_stage == ContestStage.VOTING_FINAL: return VoteStage.FINAL
+            return None
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name="Голосующий")
     story = models.ForeignKey(Story, on_delete=models.CASCADE, verbose_name="Рассказ")
     stage = models.IntegerField(choices=VoteStage.choices, default=VoteStage.FIRST, verbose_name="Этап")

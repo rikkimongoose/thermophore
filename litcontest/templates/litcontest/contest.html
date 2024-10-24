@@ -28,6 +28,22 @@
     <li><em>{{ story.owner }}</em> <a href="{% url 'litcontest:story-detail' story.id %}">{{ story.title }}</a> <a href="{% url 'litcontest:story-update' story.id %}" class="btn btn-primary">{% bs_icon 'pencil' %}</a>
     </li>
 {% endfor %}
+{% if is_only_my_stories %}
+{% for story in my_stories %}
+    <li><em>{{ story.owner }}</em> <a href="{% url 'litcontest:story-detail' story.id %}">{{ story.title }}</a>{% if is_editable %} <a href="{% url 'litcontest:story-update' story.id %}" class="btn btn-primary">{% bs_icon 'pencil' %}</a>{% endif %}
+    </li>
+{% endfor %}
+{% elif is_groped %}
+{% for group,stories in grouped.items() %}
+<h2>Группа {{ group }}</h2>
+{% for story in stories %}
+    <li><em>{{ story.owner }}</em> <a href="{% url 'litcontest:story-detail' story.id %}">{{ story.title }}</a>
+    </li>
+{% endfor %}
+{% endfor %}
+{% endif %}
+
+{% if is_voting %}
 <h3>Голосование</h3>
 <form method="post" action="">
     {% csrf_token %}
@@ -36,7 +52,7 @@
     </table>
     {% bootstrap_button "Голосовать" button_type="submit" button_class="btn-primary" %}
 </form>
-
+{% endif %}
 <h3>Добавить рассказ</h3>
 <a href="{% url 'litcontest:story-add' object.id %}" class="btn btn-primary" role="button">{% bs_icon 'file-earmark-plus' %} Добавить рассказ</a>
 </div>

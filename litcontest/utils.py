@@ -44,3 +44,7 @@ def load_voting_groups(user, contest_id):
     if not my_stories: return None
     my_stories_sorted = sorted(data, key=text_len)
     return [my_stories_sorted[0]['group']]
+
+def stories_grouped(stories):
+    stories_grouped = defaultdict(set)
+    for story in stories: stories_grouped[story.group].append(story)
